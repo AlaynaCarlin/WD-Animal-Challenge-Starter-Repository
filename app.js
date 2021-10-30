@@ -1,15 +1,16 @@
+require("dotenv").config();
 const express = require("express");
 const db = require("./db");
-
 const app = express();
+const controllers = require("./controllers");
 
 app.use(require("./middleware/headers"));
-
-const controllers = require("./controllers");
 
 app.use(express.json());
 
 app.use("/user", controllers.usercontroller);
+
+app.use("/create", controllers.usercontroller);
 
 db.authenticate()
   .then(() => db.sync()) // => {force: true}
