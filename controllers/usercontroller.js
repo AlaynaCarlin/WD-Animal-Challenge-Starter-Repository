@@ -4,25 +4,27 @@ const { User } = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { UniqueConstraintError } = require("sequelize/lib/errors");
-const { application } = require("express");
+// const { application } = require("express");
 
 router.post("/create", async (req, res) => {
 
   let { username, password } = req.body.user;
   try {
-    const User = await User.create({
+    const thisUser = await User.create({
       username,
       password: bcrypt.hashSync(password, 13),
     });
 
     let token = jwt.sign({ id: User.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 });
+    console.log(token);
 
     res.status(200).json({
       message: "The user object just saved",
-      user: User,
+      user: thisUser,
       sessionToken: token
     });
   } catch (err) {
+    console.log(username, password);
     if (err instanceof UniqueConstraintError) {
       res.status(409).json({
         message: "Email already in use",
@@ -30,10 +32,11 @@ router.post("/create", async (req, res) => {
     } else {
       res.status(500).json({
         message: 'Failed to register user',
+        error: err
       });
     }
   }
-})
+});
 
 router.post("/login", async (req, res) => {
   let { username, password } = req.body.user;
