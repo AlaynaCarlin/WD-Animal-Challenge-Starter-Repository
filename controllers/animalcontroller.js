@@ -52,5 +52,32 @@ router.delete("/delete/:id", async (req, res) => {
     }
 });
 
+router.put("/update/:id", async (req, res) => {
+    const {name, legNumber, predator} = req.body;
+    const animalId = req.params.id;
+
+    const query = {
+        where: {
+            id: animalId
+        }
+    };
+
+    const updateAnimal = {
+        name: name,
+        legNumber: legNumber,
+        predator: predator
+    };
+
+    try {
+        const update = await Animal.update(updateAnimal, query);
+        res.status(200).json({
+            message: "Animal successfully updated!",
+            update: updateAnimal
+        });
+    } catch (err) {
+        res.status(500).json({error: err});
+    }
+});
+
 
 module.exports = router;
