@@ -10,7 +10,9 @@ app.use(express.json());
 
 app.use("/user", controllers.usercontroller);
 
-app.use("/create", controllers.usercontroller);
+// app.use("/create_user", controllers.usercontroller);
+
+app.use("/animal", controllers.animalcontroller);
 
 db.authenticate()
   .then(() => db.sync()) // => {force: true}

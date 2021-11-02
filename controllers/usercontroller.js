@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const { UniqueConstraintError } = require("sequelize/lib/errors");
 // const { application } = require("express");
 
-router.post("/create", async (req, res) => {
+router.post("/create_user", async (req, res) => {
 
   let { username, password } = req.body.user;
   try {
