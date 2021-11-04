@@ -1,15 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const { Animal } = require("../models");
+// const jwt = require("jsonwebtoken");
+const validateJWT = require("../middleware/validate-session");
 
 
-router.post("/create_animal", async (req, res) => {
+router.post("/create_animal", validateJWT, async (req, res) => {
     let { name, legNumber, predator } = req.body.user;
     try {
         const newAnimal = await Animal.create({
             name,
             legNumber,
-            predator
+            predator,
+            owner: id
         });
 
         res.status(201).json({
@@ -27,7 +30,7 @@ router.post("/create_animal", async (req, res) => {
     // })
 });
 
-router.get("/", async (req, res) => {
+router.get("/", validateJWT, async (req, res) => {
     try {
         const animals = await Animal.findAll();
         res.status(200).json(animals);
@@ -36,7 +39,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id", validateJWT, async (req, res) => {
     const animalId = req.params.id;
 
     try {
@@ -46,19 +49,21 @@ router.delete("/delete/:id", async (req, res) => {
             }
         };
         await Animal.destroy(query);
-        res.status(200).json({ message: "Animal Removed"});
+        res.status(200).json({ message: "Animal Removed" });
     } catch (err) {
-        res.status(500).json({ error: err});
+        res.status(500).json({ error: err });
     }
 });
 
-router.put("/update/:id", async (req, res) => {
-    const {name, legNumber, predator} = req.body;
+router.put("/update/:id", validateJWT, async (req, res) => {
+    const { name, legNumber, predator } = req.body;
     const animalId = req.params.id;
-
+    // const userID = req.user.id;
+    // console.log(animalId, userID);
     const query = {
         where: {
-            id: animalId
+            id: animalId,
+            // userID: userID
         }
     };
 
@@ -70,12 +75,15 @@ router.put("/update/:id", async (req, res) => {
 
     try {
         const update = await Animal.update(updateAnimal, query);
-        res.status(200).json({
+        res.status(200).json(
+            {
             message: "Animal successfully updated!",
-            update: updateAnimal
-        });
+            update: update
+        }
+        );
     } catch (err) {
-        res.status(500).json({error: err});
+        res.status(500).json({ error: err });
+        console.log(err);
     }
 });
 

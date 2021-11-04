@@ -6,6 +6,7 @@ const controllers = require("./controllers");
 
 app.use(require("./middleware/headers"));
 
+
 app.use(express.json());
 
 app.use("/user", controllers.usercontroller);
